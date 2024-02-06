@@ -1,0 +1,30 @@
+name: "http server test"
+startup:
+  command: "sudo systemctl start httpd"
+  check_command: "pgrep httpd"
+  timeout: 10
+  retry: 3
+
+tests:
+  - type: "http"
+    url: "http://localhost:80"
+    expected_status: 200
+    expected_output: "It works!"
+    timeout: 5
+    pre_command:
+      coomand: "echo 'Hello, world'"
+      timeout: 10
+
+  - type: "command"
+    command: "curl -I http://localhost:80"
+    expected_output: "HTTP/1.1 200 OK"
+    timeout: 5
+    post_command:
+      coomand: "echo 'Hello, world'"
+      timeout: 10
+
+shutdown:
+  command: "sudo systemctl stop httpd"
+  check_command: "pgrep httpd || echo 'not running'"
+  timeout: 10
+  retry: 3
